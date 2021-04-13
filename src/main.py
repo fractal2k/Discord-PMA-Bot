@@ -1,6 +1,7 @@
 import os
 import random
 import discord
+import aiocron
 from utils import get_quote
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -34,12 +35,25 @@ async def hi(ctx):
 @bot.command()
 async def inspire(ctx):
     quote = get_quote()
-    await ctx.send(quote)
+    e_dict = {
+        'title': 'Here\'s Your Quote:',
+        'description': quote,
+        'color': discord.Color.orange().value
+    }
+    embed = discord.Embed.from_dict(e_dict)
+    await ctx.trigger_typing()
+    await ctx.send(embed=embed)
 
 
 @bot.command()
 async def clear(ctx, amount=10):
     await ctx.channel.purge(limit=amount, check=purge_check)
+
+
+@aiocron.crontab('0 8 * * *')
+async def cronjob1():
+    channel = bot.get_channel(830678928019554317)
+    await channel.send('Good morning')
 
 
 bot.run(os.getenv('TOKEN'))
