@@ -50,7 +50,7 @@ async def clear(ctx, amount=10):
     await ctx.channel.purge(limit=amount, check=purge_check)
 
 
-@aiocron.crontab('*/1 * * * *')
+@aiocron.crontab('0 8 * * *')
 async def cronjob1():
     channel = bot.get_channel(int(os.getenv('TEMP_CHANNEL')))
     await channel.send('Good morning')
