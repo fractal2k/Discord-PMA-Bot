@@ -15,7 +15,7 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
-
+        
 # Couldn't put this in the Encouragement cog because of the way aiocron works
 @aiocron.crontab('0 8 * * *')
 async def daily_motivation():

@@ -1,6 +1,6 @@
 import os
 import discord
-from utils import get_quote
+from general_utils import get_quote
 from discord.ext import commands
 
 

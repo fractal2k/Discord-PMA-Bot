@@ -1,4 +1,6 @@
+import os
 import json
+import discord
 import requests
 
 
@@ -6,3 +8,4 @@ def get_quote():
     url = 'https://zenquotes.io/api/random'
     response = json.loads(requests.get(url).text)
     return response[0]['q'] + '\n- ' + response[0]['a']
+    
