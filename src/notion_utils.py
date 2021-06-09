@@ -1,7 +1,6 @@
 import os
 import json
 import requests
-from dotenv import load_dotenv
 
 
 def get_reading_queue():
