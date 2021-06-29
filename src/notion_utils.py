@@ -1,12 +1,17 @@
 import os
 import json
 import requests
+# from dotenv import load_dotenv
+# load_dotenv()
+
+# TODO: Modularise code properly using classes and refactor it
 
 
 def get_reading_queue():
     """Retrieves the reading queue from my notion page"""
     url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_READING_QUEUE')}/children?page_size=50"
-    headers = {'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}"}
+    headers = {
+        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}"}
     response = json.loads(requests.get(url, headers=headers).text)
     books = response['results'][2:]
 
@@ -21,7 +26,8 @@ def get_reading_queue():
 def add_book(titles):
     """Adds the given book title to the reading list"""
     url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_READING_QUEUE')}/children"
-    headers = {'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}", 'Content-Type': 'application/json'}
+    headers = {
+        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}", 'Content-Type': 'application/json'}
     children = []
     for title in titles:
         children.append(create_bullet(title[1:-1]))
@@ -32,9 +38,57 @@ def add_book(titles):
     if status_code == 200:
         result = ('All good!', 'The book has been added to your reading list')
     else:
-        result = ('Looks like something went wrong', f'Error code: {status_code}')
-    
+        result = ('Looks like something went wrong',
+                  f'Error code: {status_code}')
+
     return result
+
+
+def get_in_tray():
+    '''Gets all elements in the in tray'''
+    url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_IN_TRAY')}/children"
+    headers = {
+        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}"}
+    response = json.loads(requests.get(url, headers=headers).text)
+    num_elements = len(response['results'])
+    result = None
+
+    if num_elements > 0:
+        result = [elem['bulleted_list_item']['text'][0]
+                  ['text']['content'] for elem in response['results']]
+
+    return result
+
+
+def change_in_tray_title(new_title, debug=False):
+    '''Changes the background color of in tray page'''
+    url = f"https://api.notion.com/v1/pages/{os.getenv('NOTION_IN_TRAY')}"
+    headers = {
+        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}", 'Content-Type': 'application/json'}
+    data = {
+        'properties': {
+            'title': {
+                'title': [
+                    {
+                        'type': 'text',
+                        'plain_text': new_title,
+                        'text': {
+                            'content': new_title
+                        }
+                    }
+                ]
+            }
+        }
+    }
+    data = json.dumps(data)
+    response = requests.patch(url, headers=headers, data=data)
+
+    if debug:
+        return json.loads(response.text)
+
+    status_code = response.status_code
+
+    return status_code
 
 
 def create_bullet(text):
@@ -52,3 +106,7 @@ def create_bullet(text):
             ]
         }
     }
+
+
+# if __name__ == '__main__':
+    # print(change_in_tray_title('In tray'))

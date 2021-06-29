@@ -51,6 +51,7 @@ def query_response_handler(label, message):
         pass
 
 
+# TODO: Create an entity extraction nlp pipeline for this
 def extract_book_title(message):
     """Extracts title of the book surrounded by double/single quotes"""
     titles = re.findall('"[\w\s,?!\-]*"|\'[\w\s,?!\-]*\'', message)
