@@ -12,7 +12,7 @@ bot = commands.Bot(command_prefix='pma ')
 
 
 # Load all cogs
-for filename in os.listdir('./cogs'):
+for filename in os.listdir(os.getcwd() + '/cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 

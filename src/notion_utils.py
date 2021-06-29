@@ -1,8 +1,6 @@
 import os
 import json
 import requests
-# from dotenv import load_dotenv
-# load_dotenv()
 
 # TODO: Modularise code properly using classes and refactor it
 
@@ -106,7 +104,3 @@ def create_bullet(text):
             ]
         }
     }
-
-
-# if __name__ == '__main__':
-    # print(change_in_tray_title('In tray'))
