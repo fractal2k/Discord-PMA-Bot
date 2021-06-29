@@ -12,13 +12,13 @@ bot = commands.Bot(command_prefix='pma ')
 
 
 # Load all cogs
-for filename in os.listdir('/app/src/cogs'):
+for filename in os.listdir('/app/src/cogs'):  # Heroku specific path
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
 
 # Couldn't put this in the Encouragement cog because of the way aiocron works
-@aiocron.crontab('0 8 * * *')
+@aiocron.crontab('0 2 * * *')
 async def daily_motivation():
     """Function that runs at 8am everyday and sends an embed to the default channel with some PMA message
     """
