@@ -4,7 +4,7 @@ import aiocron
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
-from notion_utils import get_in_tray, change_in_tray_title
+from notion_utils import get_in_tray, get_todays_agenda, change_in_tray_title
 
 # Initialize bot
 load_dotenv()
@@ -12,30 +12,47 @@ bot = commands.Bot(command_prefix='pma ')
 
 
 # Load all cogs
-for filename in os.listdir('/app/src/cogs'):  # Heroku specific path
+# Heroku specific path: /app/src/cogs
+for filename in os.listdir('/app/src/cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
 
-# Couldn't put this in the Encouragement cog because of the way aiocron works
+# Couldn't put this in cogs because of the way aiocron works
 @aiocron.crontab('0 2 * * *')
-async def daily_motivation():
-    """Function that runs at 8am everyday and sends an embed to the default channel with some PMA message
+async def daily_report():
+    """Function that runs at 7:30am everyday and sends an embed to the default channel with reports about pending tasks
     """
     morning_PMA = [
         'LET\'S GET THIS BREAD GAMERS LESSSSSSSSSSSSSSSSSSSSSSSSSSGOOOOOO',
         'Take a deep breath. You got this.',
         'The only thing you should doubt is your own self doubt. Go out there and make your mark.',
-        'You are enough. You matter. You are visible. And you can make a difference.'
+        'You are enough. You matter. You are visible. And you can make a difference.',
+        'The only thing that matters is right now.'
     ]
-    e_dict = {
-        'title': 'Daily Dose Of PMA',
-        'description': random.choice(morning_PMA),
-        'color': discord.Color.orange().value
-    }
+
+    report = discord.Embed(
+        title='Good Morning!',
+        description=random.choice(morning_PMA),
+        color=discord.Color.orange().value
+    )
+    # report.set_author(name=bot.user.display_name, icon_url=bot.user.avatar_url)
+    report.add_field(name='Here\'s your daily report',
+                     value='Let\'s get some work done today!', inline=False)
+
+    in_tray_pending = len(get_in_tray())
+    todays_agenda_pending = len(get_todays_agenda())
+
+    if in_tray_pending > 0:
+        report.add_field(name='Pending in tray item(s):',
+                         value=f'{in_tray_pending}', inline=True)
+    if todays_agenda_pending > 0:
+        report.add_field(name='Item(s) on today\'s agenda:',
+                         value=f'{todays_agenda_pending}', inline=True)
+
     # Temp_channel placeholder until I create the default channel functionality
     channel = bot.get_channel(int(os.getenv('TEMP_CHANNEL')))
-    await channel.send(embed=discord.Embed.from_dict(e_dict))
+    await channel.send(embed=report)
 
 
 @aiocron.crontab('0 */4 * * *')

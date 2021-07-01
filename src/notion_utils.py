@@ -1,6 +1,8 @@
 import os
 import json
 import requests
+# from dotenv import load_dotenv
+# load_dotenv()
 
 # TODO: Modularise code properly using classes and refactor it
 
@@ -21,6 +23,35 @@ def get_reading_queue():
     return titles
 
 
+def get_in_tray():
+    '''Gets all elements in the in tray'''
+    url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_IN_TRAY')}/children"
+    headers = {
+        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}"}
+    response = json.loads(requests.get(url, headers=headers).text)
+    num_elements = len(response['results'])
+    result = []
+
+    if num_elements > 0:
+        result = [elem['bulleted_list_item']['text'][0]
+                  ['text']['content'] for elem in response['results']]
+
+    return result
+
+
+def get_todays_agenda():
+    '''Gets all elements in today's agenda'''
+    url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_NEXT_ACTIONS')}/children"
+    headers = {
+        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}"}
+    response = json.loads(requests.get(url, headers=headers).text)
+    # TODO: Make this more dynamic to incorporate what project each task refers to and if there's a time attached to it
+    result = [elem['bulleted_list_item']['text'][0]['plain_text']
+              for elem in response['results'][1:-1]]
+
+    return result
+
+
 def add_book(titles):
     """Adds the given book title to the reading list"""
     url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_READING_QUEUE')}/children"
@@ -38,22 +69,6 @@ def add_book(titles):
     else:
         result = ('Looks like something went wrong',
                   f'Error code: {status_code}')
-
-    return result
-
-
-def get_in_tray():
-    '''Gets all elements in the in tray'''
-    url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_IN_TRAY')}/children"
-    headers = {
-        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}"}
-    response = json.loads(requests.get(url, headers=headers).text)
-    num_elements = len(response['results'])
-    result = None
-
-    if num_elements > 0:
-        result = [elem['bulleted_list_item']['text'][0]
-                  ['text']['content'] for elem in response['results']]
 
     return result
 
@@ -104,3 +119,7 @@ def create_bullet(text):
             ]
         }
     }
+
+
+# if __name__ == '__main__':
+#     print(get_todays_agenda())

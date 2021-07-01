@@ -5,6 +5,8 @@ import discord
 import requests
 from notion_utils import get_reading_queue, add_book
 
+# TODO: Refactor this code too
+
 
 def query_intent_classifier(sequence):
     """Sends a get request to hugginface's zero shot text classification model API"""
