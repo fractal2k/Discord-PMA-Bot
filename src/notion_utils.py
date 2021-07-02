@@ -39,12 +39,16 @@ def get_in_tray():
     return result
 
 
-def get_todays_agenda():
+def get_todays_agenda(debug=False):
     '''Gets all elements in today's agenda'''
     url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_NEXT_ACTIONS')}/children"
     headers = {
         'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}"}
     response = json.loads(requests.get(url, headers=headers).text)
+
+    if debug:
+        return response
+
     # TODO: Make this more dynamic to incorporate what project each task refers to and if there's a time attached to it
     result = [elem['bulleted_list_item']['text'][0]['plain_text']
               for elem in response['results'][1:-1]]
