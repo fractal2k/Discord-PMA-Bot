@@ -7,12 +7,17 @@ import requests
 # TODO: Modularise code properly using classes and refactor it
 
 
-def get_reading_queue():
+def get_reading_queue(debug=False):
     """Retrieves the reading queue from my notion page"""
     url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_READING_QUEUE')}/children?page_size=50"
     headers = {
-        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}"}
+        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}",
+        'Notion-Version': '2021-05-13'}
     response = json.loads(requests.get(url, headers=headers).text)
+
+    if debug:
+        return response
+    
     books = response['results'][2:]
 
     titles = []
@@ -23,12 +28,17 @@ def get_reading_queue():
     return titles
 
 
-def get_in_tray():
+def get_in_tray(debug=False):
     '''Gets all elements in the in tray'''
     url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_IN_TRAY')}/children"
     headers = {
-        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}"}
+        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}",
+        'Notion-Version': '2021-05-13'}
     response = json.loads(requests.get(url, headers=headers).text)
+
+    if debug:
+        return response
+    
     num_elements = len(response['results'])
     result = []
 
@@ -43,7 +53,8 @@ def get_todays_agenda(debug=False):
     '''Gets all elements in today's agenda'''
     url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_NEXT_ACTIONS')}/children"
     headers = {
-        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}"}
+        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}",
+        'Notion-Version': '2021-05-13'}
     response = json.loads(requests.get(url, headers=headers).text)
 
     if debug:
@@ -60,7 +71,9 @@ def add_book(titles):
     """Adds the given book title to the reading list"""
     url = f"https://api.notion.com/v1/blocks/{os.getenv('NOTION_READING_QUEUE')}/children"
     headers = {
-        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}", 'Content-Type': 'application/json'}
+        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}",
+        'Content-Type': 'application/json',
+        'Notion-Version': '2021-05-13'}
     children = []
     for title in titles:
         children.append(create_bullet(title[1:-1]))
@@ -81,7 +94,9 @@ def change_in_tray_title(new_title, debug=False):
     '''Changes the background color of in tray page'''
     url = f"https://api.notion.com/v1/pages/{os.getenv('NOTION_IN_TRAY')}"
     headers = {
-        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}", 'Content-Type': 'application/json'}
+        'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}",
+        'Content-Type': 'application/json',
+        'Notion-Version': '2021-05-13'}
     data = {
         'properties': {
             'title': {

@@ -41,15 +41,14 @@ async def daily_report():
                      value='Let\'s get some work done today!', inline=False)
 
     in_tray_pending = len(get_in_tray())
-    # todays_agenda_pending = len(get_todays_agenda())
-    print(get_todays_agenda(debug=True))
+    todays_agenda_pending = len(get_todays_agenda())
 
     if in_tray_pending > 0:
         report.add_field(name='Pending in tray item(s):',
                          value=f'{in_tray_pending}', inline=True)
-    # if todays_agenda_pending > 0:
-    #     report.add_field(name='Item(s) on today\'s agenda:',
-    #                      value=f'{todays_agenda_pending}', inline=True)
+    if todays_agenda_pending > 0:
+        report.add_field(name='Item(s) on today\'s agenda:',
+                         value=f'{todays_agenda_pending}', inline=True)
 
     # Temp_channel placeholder until I create the default channel functionality
     channel = bot.get_channel(int(os.getenv('TEMP_CHANNEL')))
