@@ -19,7 +19,7 @@ for filename in os.listdir('/app/src/cogs'):
 
 
 # Couldn't put this in cogs because of the way aiocron works
-@aiocron.crontab('* * * * *') # 0 2 * * *
+@aiocron.crontab('0 2 * * *')
 async def daily_report():
     """Function that runs at 7:30am everyday and sends an embed to the default channel with reports about pending tasks
     """
