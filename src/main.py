@@ -4,6 +4,7 @@ import aiocron
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
+from general_utils import parse_top3
 from notion_utils import get_in_tray, get_todays_agenda, change_in_tray_title
 
 # Initialize bot
@@ -41,14 +42,17 @@ async def daily_report():
                      value='Let\'s get some work done today!', inline=False)
 
     in_tray_pending = len(get_in_tray())
-    todays_agenda_pending = len(get_todays_agenda())
+    todays_agenda = get_todays_agenda()
 
     if in_tray_pending > 0:
         report.add_field(name='Pending in tray item(s):',
                          value=f'{in_tray_pending}', inline=True)
-    if todays_agenda_pending > 0:
+    if len(todays_agenda) > 0:
         report.add_field(name='Item(s) on today\'s agenda:',
-                         value=f'{todays_agenda_pending}', inline=True)
+                         value=f'{len(todays_agenda)}', inline=True)
+        top3_string = parse_top3(todays_agenda)
+        report.add_field(name='Top item(s) on today\'s agenda:',
+                         value=top3_string, inline=False)
 
     # Temp_channel placeholder until I create the default channel functionality
     channel = bot.get_channel(int(os.getenv('TEMP_CHANNEL')))

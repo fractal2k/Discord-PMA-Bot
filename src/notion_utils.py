@@ -56,13 +56,24 @@ def get_todays_agenda(debug=False):
         'Authorization': f"Bearer {os.getenv('NOTION_SECRET')}",
         'Notion-Version': '2021-05-13'}
     response = json.loads(requests.get(url, headers=headers).text)
+    result = []
 
     if debug:
         return response
+    
+    # Dynamic parsing of agenda items
+    for i, elem in enumerate(response['results'][1:-1]):
+        text_array = elem['bulleted_list_item']['text']
+        result_elem = {'task': '', 'project': '', 'date': ''}
 
-    # TODO: Make this more dynamic to incorporate what project each task refers to and if there's a time attached to it
-    result = [elem['bulleted_list_item']['text'][0]['plain_text']
-              for elem in response['results'][1:-1]]
+        for text_object in text_array:
+            if text_object['type'] == 'text':
+                result_elem['task'] += text_object['plain_text']
+            elif text_object['type'] == 'mention' and text_object['mention']['type'] == 'page':
+                result_elem['project'] = text_object['plain_text']
+            elif text_object['type'] == 'mention':
+                result_elem['date'] = text_object['mention']['date']['start']
+        result.append(result_elem)
 
     return result
 
@@ -141,4 +152,4 @@ def create_bullet(text):
 
 
 # if __name__ == '__main__':
-#     print(get_todays_agenda())
+#     print(json.dumps(get_todays_agenda(), indent=2))
