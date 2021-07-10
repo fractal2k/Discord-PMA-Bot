@@ -4,8 +4,7 @@ import aiocron
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
-from general_utils import parse_top3
-from notion_utils import get_in_tray, get_todays_agenda, change_in_tray_title
+from notion import InTray, TodaysAgenda, WaitingList
 
 # Initialize bot
 load_dotenv()
@@ -31,6 +30,9 @@ async def daily_report():
         'You are enough. You matter. You are visible. And you can make a difference.',
         'The only thing that matters is right now.'
     ]
+    intray = InTray()
+    tagenda = TodaysAgenda()
+    wlist = WaitingList()
 
     report = discord.Embed(
         title='Good Morning!',
@@ -41,8 +43,9 @@ async def daily_report():
     report.add_field(name='Here\'s your daily report',
                      value='Let\'s get some work done today!', inline=False)
 
-    in_tray_pending = len(get_in_tray())
-    todays_agenda = get_todays_agenda()
+    in_tray_pending = len(intray.get_tray())
+    todays_agenda = tagenda.get_agenda()
+    waiting = wlist.get_list()
 
     if in_tray_pending > 0:
         report.add_field(name='Pending in tray item(s):',
@@ -50,9 +53,13 @@ async def daily_report():
     if len(todays_agenda) > 0:
         report.add_field(name='Item(s) on today\'s agenda:',
                          value=f'{len(todays_agenda)}', inline=True)
-        top3_string = parse_top3(todays_agenda)
+        top3_string = '\n'.join(
+            [f'{idx}. {item}' for idx, item in enumerate(todays_agenda[:3], 1)])
         report.add_field(name='Top item(s) on today\'s agenda:',
                          value=top3_string, inline=False)
+    if len(waiting) > 0:
+        report.add_field(name='Item(s) in waiting list:',
+                         value=f'{len(waiting)}', inline=True)
 
     # Temp_channel placeholder until I create the default channel functionality
     channel = bot.get_channel(int(os.getenv('TEMP_CHANNEL')))
@@ -60,15 +67,24 @@ async def daily_report():
 
 
 @aiocron.crontab('0 */4 * * *')
-async def in_tray_highlighter():
-    """Function that runs every 4 hours to check if something is in the in tray and change the title accordingly
+async def page_highlighter():
+    """Function that runs every 4 hours to check if something is in the in tray and waiting list and changes the title accordingly
     """
     # TODO: Make the background of the in tray change when notion API lets you update blocks
-    title = 'In tray'
-    in_tray_elements = get_in_tray()
-    if in_tray_elements is not None:
-        title = f'In tray ({len(in_tray_elements)})'
-    status_code = change_in_tray_title(title)
-    # print(f"Action complete. Status code: {status_code}")
+    intray = InTray()
+    wlist = WaitingList()
+    tray = intray.get_tray()
+    waiting = wlist.get_list()
+    tray_title = 'In tray'
+    wlist_title = 'Waiting'
+
+    if len(tray) > 0:
+        tray_title = f'In tray ({len(tray)})'
+    if len(waiting) > 0:
+        wlist_title = f'Waiting ({len(waiting)})'
+
+    status_code = intray.change_title(new_title=tray_title)
+    status_code = wlist.change_title(new_title=wlist_title)
+
 
 bot.run(os.getenv('TOKEN'))
