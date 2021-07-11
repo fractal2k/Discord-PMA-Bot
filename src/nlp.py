@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 class NLPEngine():
-    """Handles communication with Hugging Face's API"""
+    """Handles communication with Hugging Face's API and general NLP utilities"""
 
     def __init__(self):
         self.url = 'https://api-inference.huggingface.co/models/valhalla/distilbart-mnli-12-1'

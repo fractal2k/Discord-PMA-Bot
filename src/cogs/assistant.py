@@ -1,8 +1,8 @@
 import os
 import discord
 from notion import *
-from discord.ext import commands
 from nlp import NLPEngine
+from discord.ext import commands
 
 
 class Assistant(commands.Cog):
@@ -27,7 +27,7 @@ class Assistant(commands.Cog):
                 result = self.fulfillment(response, message.content[4:])
             except RuntimeError as e:
                 embed = self.get_embed('error')
-                embed.description = e.__str__
+                embed.description = str(e)
                 result = {'embed': embed}
 
             await message.channel.send(**result)

@@ -84,6 +84,7 @@ class ReadingList(Notion):
 
 class InTray(Notion):
     """In tray wrapper class for Notion"""
+    # Add dynamic parsing to account for urls
 
     def __init__(self):
         super().__init__()
