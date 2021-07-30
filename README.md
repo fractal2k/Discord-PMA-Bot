@@ -1,12 +1,8 @@
 <h1 align='center'>Personal Assistant Bot</h1>
 
-<div style="text-align: center">
-    <div style="display: inline-block">
-        <img src="https://img.shields.io/badge/python-3.8.6-blue" />
-    </div>
-    <div style="display: inline-block">
-        <img src="https://img.shields.io/github/license/fractal2k/Discord-PMA-Bot" />
-    </div>
+<div align="center">
+    <img src="https://img.shields.io/badge/python-3.8.6-blue" />
+    <img src="https://img.shields.io/github/license/fractal2k/Discord-PMA-Bot" />
 </div>
 
 A bot that automates certain repetitive tasks in the [productivity system](https://gettingthingsdone.com/) I've created in [Notion](https://www.notion.so/). Uses [Discord](https://discord.com/) as a front end for interacting with the user, and can understand natural language to a certain extent.
