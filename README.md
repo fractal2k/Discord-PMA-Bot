@@ -1,4 +1,5 @@
-# Personal assistant bot
+<h1 align='center'>Personal assistant bot</h1>
+![GitHub](https://img.shields.io/github/license/fractal2k/Discord-PMA-Bot) ![Python](https://img.shields.io/badge/python-3.8.6-blue)
 
 A bot that automates certain repetitive tasks in the [productivity system](https://gettingthingsdone.com/) I've created in [Notion](https://www.notion.so/). Uses [Discord](https://discord.com/) as a front end for interacting with the user, and can understand natural language to a certain extent.
 
